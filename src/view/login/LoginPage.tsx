@@ -1,11 +1,11 @@
 import React from "react";
 
-import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
+import { Button, Checkbox, Form, Grid, Input, theme, Typography, notification } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { login } from "./Login";
 import ContentLayout from "../../layout/login/ContentLayout";
-import { Content } from "antd/es/layout/layout";
+import { useAlertPopup } from "../common/AlertPopup";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,14 +15,24 @@ export default function Login() {
   const { Text, Title, Link } = Typography;
   const { token } = useToken();
   const screens = useBreakpoint();
+  const [form] = Form.useForm();
+  const alertPopup = useAlertPopup();
 
   const loginHandler = async ({id, password, remember}: {id: string, password: string, remember: boolean}) => {    
-    const loginResult = await login({id, password});
-    if(loginResult) {
-      // TODO DB에서 불러온 메뉴 중 첫번째 메뉴로 이동하도록 수정
-      navigate('/sales/month');
-    }
+    const loginResult = await login(id, password);
+    if(loginResult) _handleLoginSuccess();
+    else _handleLoginFail();
   };
+
+  const _handleLoginSuccess = () => {
+    navigate('/sales/month');
+  };
+
+  const _handleLoginFail = () => {
+    form.resetFields();
+    alertPopup.error('Login Fail Notification', 'The id or password is incorrect. Please check your id and password.', 'top');
+  };
+
 
   const styles = {
     title: {
@@ -40,6 +50,7 @@ export default function Login() {
   </>);
 
   const content = (<>
+    {alertPopup.contextHolder}
     <Form className="content" 
             name="normal_login"
             initialValues={{
@@ -48,6 +59,7 @@ export default function Login() {
             onFinish={loginHandler}
             layout="vertical"
             requiredMark="optional"
+            form={form}
         >
           <Form.Item name="id"
             rules={[
@@ -96,7 +108,6 @@ export default function Login() {
       Don't have an account?<br/>
       Please connect to chickenman10@naver.com
     </Text>
-    {/* <Link href="">Sign up now</Link> */}
   </>);
 
   const contentComp = { title, content, footer };

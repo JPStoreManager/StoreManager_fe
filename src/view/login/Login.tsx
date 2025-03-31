@@ -1,11 +1,12 @@
-const login: ({ id, password }: { id: string, password: string }) => boolean = ({id, password}) => {
-    // TODO 서버 구축 완료 시 API 호출로 변경 
-    if(id === 'test' && password == '1234') {
-        return true;
-    }
-    else {
-        return false;
-    }
+import { resultReponse } from "../../component/util/ApiResponse";
+import apiUtil from "../../component/util/ApiUtil";
+
+const login: ( id: string, password: string ) => Promise<boolean> = async (id, password) => {
+    return await apiUtil.post(apiUtil.PATH.USER.LOGIN, {id, password})
+        .then(res => {
+            if(res.status === 200) return res.json().then(data => data.result === resultReponse.YES);
+            else return false;
+        });
 }
 
 export {login};
