@@ -1,7 +1,6 @@
-const resultReponse: {[prop: string]: string} = {
-  YES: 'Y',
-  NO: 'N'
+enum ResultResponse {
+  YES = 'Y',
+  NO = 'N'
 };
 
-
-export {resultReponse};
+export {ResultResponse};

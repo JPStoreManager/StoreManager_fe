@@ -1,9 +1,31 @@
 const apiUtil = (() => {
   const SERVER_HOST = 'http://localhost:8080';
 
-  const PATH = {
+  const HTTP_METHOD = {
+    GET: 'GET',
+    POST: 'POST',
+    PUT: 'PUT',
+    DELETE: 'DELETE'
+  };
+
+  const API = {
     USER: {
-      LOGIN: 'user/login'
+      LOGIN: {
+        path: '/user/login',
+        method: HTTP_METHOD.POST
+      },
+      FIND_PW_SEND_OTP: {
+        path: '/user/find/pw/otp/send',
+        method: HTTP_METHOD.POST
+      },
+      FIND_PW_VERIFY_OTP: {
+        path: '/user/find/pw/otp/verify',
+        method: HTTP_METHOD.POST
+      },
+      FIND_PW_UPDATE_PW: {
+        path: '/user/find/pw',
+        method: HTTP_METHOD.PUT
+      },
     }
   };
 
@@ -16,7 +38,7 @@ const apiUtil = (() => {
 
     const reqestHeaders: HeadersInit = _getheaders(headers);
 
-    return fetch(`${SERVER_HOST}/${path}${queryString}`, { 
+    return fetch(`${SERVER_HOST}${path}${queryString}`, { 
       method: 'GET',
       headers: reqestHeaders
     });
@@ -26,7 +48,7 @@ const apiUtil = (() => {
     const reqestHeaders: Headers = _getheaders(headers);
     if(!reqestHeaders.has('Content-Type')) reqestHeaders.set('Content-Type', 'application/json');
 
-    return fetch(`${SERVER_HOST}/${path}`, {
+    return fetch(`${SERVER_HOST}${path}`, {
       method: 'POST',
       headers: reqestHeaders,
       body: JSON.stringify(body)
@@ -46,7 +68,7 @@ const apiUtil = (() => {
   };
 
   return {
-    PATH,
+    API,
     get,
     post
   }

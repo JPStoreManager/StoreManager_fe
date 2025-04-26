@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { Button, Checkbox, Form, Grid, Input, theme, Typography, notification } from "antd";
+import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { login } from "./Login";
-import ContentLayout from "../../layout/login/ContentLayout";
-import { useAlertPopup } from "../common/AlertPopup";
+import ContentLayout from "../../../layout/login/LoginContentLayout";
+import { useAlertPopup } from "../../common/AlertPopup";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,9 +17,13 @@ export default function Login() {
   const screens = useBreakpoint();
   const [form] = Form.useForm();
   const alertPopup = useAlertPopup();
+  const [showLoading, setShowLoading] = useState(false);
 
   const loginHandler = async ({id, password, remember}: {id: string, password: string, remember: boolean}) => {    
-    const loginResult = await login(id, password);
+    setShowLoading(true);
+    const loginResult = await login({id, password});
+    setShowLoading(false);
+
     if(loginResult) _handleLoginSuccess();
     else _handleLoginFail();
   };
@@ -93,7 +97,7 @@ export default function Login() {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>Remember me</Checkbox>
             </Form.Item>
-            <Link className="forgot-pw" href="/login/findPassword">Forgot password?</Link>
+            <Link className="forgot-pw" href="/findPassword/otp">Forgot password?</Link>
           </Form.Item>
           <Form.Item>
             <Button block={true} type="primary" htmlType="submit">
