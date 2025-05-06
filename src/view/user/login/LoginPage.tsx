@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { login } from "./Login";
-import ContentLayout from "../../layout/login/ContentLayout";
-import { Content } from "antd/es/layout/layout";
+import ContentLayout from "../../../layout/login/LoginContentLayout";
+import { useAlertPopup } from "../../common/AlertPopup";
+import PagePath from "../../../route/PagePath";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,14 +16,32 @@ export default function Login() {
   const { Text, Title, Link } = Typography;
   const { token } = useToken();
   const screens = useBreakpoint();
+  const [form] = Form.useForm();
+  const alertPopup = useAlertPopup();
+  const [showLoading, setShowLoading] = useState(false);
 
   const loginHandler = async ({id, password, remember}: {id: string, password: string, remember: boolean}) => {    
+    setShowLoading(true);
     const loginResult = await login({id, password});
-    if(loginResult) {
-      // TODO DB에서 불러온 메뉴 중 첫번째 메뉴로 이동하도록 수정
-      navigate('/sales/month');
-    }
+    setShowLoading(false);
+
+    if(loginResult) _handleLoginSuccess();
+    else _handleLoginFail();
   };
+
+  const _handleLoginSuccess = () => {
+    navigate(PagePath.SALES.MONTH);
+  };
+
+  const _handleLoginFail = () => {
+    form.resetFields();
+    alertPopup.error({
+      message: 'Login Fail Notification',
+      description: 'The id or password is incorrect. Please check your id and password.', 
+      placement: 'top'
+    });
+  };
+
 
   const styles = {
     title: {
@@ -40,6 +59,7 @@ export default function Login() {
   </>);
 
   const content = (<>
+    {alertPopup.contextHolder}
     <Form className="content" 
             name="normal_login"
             initialValues={{
@@ -48,6 +68,7 @@ export default function Login() {
             onFinish={loginHandler}
             layout="vertical"
             requiredMark="optional"
+            form={form}
         >
           <Form.Item name="id"
             rules={[
@@ -81,7 +102,7 @@ export default function Login() {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>Remember me</Checkbox>
             </Form.Item>
-            <Link className="forgot-pw" href="/login/findPassword">Forgot password?</Link>
+            <Link className="forgot-pw" href="/findPassword/otp">Forgot password?</Link>
           </Form.Item>
           <Form.Item>
             <Button block={true} type="primary" htmlType="submit">
@@ -96,10 +117,9 @@ export default function Login() {
       Don't have an account?<br/>
       Please connect to chickenman10@naver.com
     </Text>
-    {/* <Link href="">Sign up now</Link> */}
   </>);
 
-  const contentComp = { title, content, footer };
+  const contentComp = { title, content, footer, showLoading };
 
   return <ContentLayout {...contentComp}/>
 }

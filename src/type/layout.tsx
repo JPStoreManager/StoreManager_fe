@@ -9,6 +9,7 @@ interface ContentLayoutComp {
   title: JSX.Element;
   content: JSX.Element;
   footer?: ReactNode;
+  showLoading?: boolean;
 }
 
 
