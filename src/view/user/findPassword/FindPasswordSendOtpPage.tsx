@@ -6,9 +6,10 @@ import { Button, Form, Grid, Input, theme, Typography } from "antd";
 import { ContentLayoutComp } from "../../../type/layout";
 import LoginContentLayout from "../../../layout/login/LoginContentLayout";
 import { useAlertPopup } from "../../common/AlertPopup";
-import { sendOtp, SendOtpResponse } from "./FindPassword";
+import { saveFindPwSessionId, sendOtp, SendOtpResponse } from "./FindPassword";
 import { ResultResponse } from "../../../component/util/ApiResponse";
-import { findPwStart } from "../../../auth/state";
+import { findPwSendOtp } from "../../../auth/state";
+import PagePath from "../../../route/PagePath";
 
 const FindPasswordSendOtpPage:React.FC = () => {
   const { useToken } = theme;
@@ -28,9 +29,9 @@ const FindPasswordSendOtpPage:React.FC = () => {
     } as React.CSSProperties,
   };
 
-  const findPasswordHandler = async ({userId, email}: {userId: string, email: string}) => {    
+  const findPasswordSendOtpHandler = async ({userId, email}: {userId: string, email: string}) => {    
     setShowLoading(true);
-    const sendOtpResult: SendOtpResponse = await sendOtp({userId, email});
+    const sendOtpResult: SendOtpResponse = await sendOtp({userId, email}).catch((error) => { console.log(error); return error });
     setShowLoading(false);
 
     if(sendOtpResult?.result === ResultResponse.YES) _handleSendOtpSuccess(sendOtpResult);
@@ -38,17 +39,22 @@ const FindPasswordSendOtpPage:React.FC = () => {
   };
 
   const _handleSendOtpSuccess = (sendOtpResult: SendOtpResponse) => {
-    sessionStorage.setItem('sessionId', sendOtpResult.sessionId);
+    saveFindPwSessionId(sendOtpResult.sessionId);
+    
     // 권한 부여하기
-    dispatch(findPwStart({
+    dispatch(findPwSendOtp({
         userId: form.getFieldValue('userId'),
         email: form.getFieldValue('email'),
     }));
-    navigate('/findPassword/otp/verify');
+    navigate(PagePath.USER.FIND_PW_VERIFY_OTP);
   };
 
   const _handleSendOtpFail = () => {
-    alertPopup.error('Find Password Fail Notification', 'The id or email is incorrect. Please check your id and email.', 'top');
+    alertPopup.error({
+      message: 'Find Password Fail Notification', 
+      description: 'The id or email is incorrect. Please check your id and email.', 
+      placement: 'top'
+    });
   };
   
   const title = (<>
@@ -61,9 +67,10 @@ const FindPasswordSendOtpPage:React.FC = () => {
   </>);
   
   const content = (<>
+    {alertPopup.contextHolder}
     <Form className="content" 
             name="normal_login"
-            onFinish={findPasswordHandler}
+            onFinish={findPasswordSendOtpHandler}
             initialValues={{
               remember: true,
             }}

@@ -12,6 +12,8 @@ import LoginLayout from '../layout/login/LoginLayout';
 import Login from '../view/user/login/LoginPage';
 import FindPasswordSendOtpPage from '../view/user/findPassword/FindPasswordSendOtpPage';
 import FindPwProtectedRoute from './FindPwProtectedRoute';
+import FindPasswordVerifyOtpPage from '../view/user/findPassword/FindPasswordVerifyOtpPage';
+import FindPasswordUpdatePwPage from '../view/user/findPassword/FindPasswordUpdatePwPage';
 
 const AppRouter: React.FC = () => {
 	const mainLayout = <MainLayout/>;
@@ -28,6 +30,8 @@ const AppRouter: React.FC = () => {
 	  
 	const login = <Login />;
 	const findPasswordSendOtpPage = <FindPasswordSendOtpPage />
+	const findPasswordVerifyOtpPage = <FindPasswordVerifyOtpPage />;
+	const findPasswordUpdatePwPage = <FindPasswordUpdatePwPage />;
 	const loginLayout = <LoginLayout />;
 
 	return (
@@ -38,8 +42,8 @@ const AppRouter: React.FC = () => {
 				</Route>
 				<Route path='findPassword' element={loginLayout}>
 					<Route path='otp' element={findPasswordSendOtpPage}></Route>
-					<Route path='otp/verify' element={<FindPwProtectedRoute>{findPasswordSendOtpPage}</FindPwProtectedRoute>}></Route>
-					<Route path='new' element={<FindPwProtectedRoute>{findPasswordSendOtpPage}</FindPwProtectedRoute>}></Route>
+					<Route path='otp/verify' element={<FindPwProtectedRoute>{findPasswordVerifyOtpPage}</FindPwProtectedRoute>}></Route>
+					<Route path='new' element={<FindPwProtectedRoute>{findPasswordUpdatePwPage}</FindPwProtectedRoute>}></Route>
 				</Route>
 				<Route path='' element={mainLayout}>
 					<Route path='sales'>

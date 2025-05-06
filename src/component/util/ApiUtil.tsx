@@ -40,7 +40,8 @@ const apiUtil = (() => {
 
     return fetch(`${SERVER_HOST}${path}${queryString}`, { 
       method: 'GET',
-      headers: reqestHeaders
+      headers: reqestHeaders,
+      credentials: 'include'
     });
   };
 
@@ -51,6 +52,20 @@ const apiUtil = (() => {
     return fetch(`${SERVER_HOST}${path}`, {
       method: 'POST',
       headers: reqestHeaders,
+      credentials: 'include',
+      body: JSON.stringify(body)
+    });
+  };
+
+
+  const put = (path: string, body?: object, headers?: Map<string, string>): Promise<Response> => {
+    const reqestHeaders: Headers = _getheaders(headers);
+    if(!reqestHeaders.has('Content-Type')) reqestHeaders.set('Content-Type', 'application/json');
+
+    return fetch(`${SERVER_HOST}${path}`, {
+      method: 'PUT',
+      headers: reqestHeaders,
+      credentials: 'include',
       body: JSON.stringify(body)
     });
   };
@@ -62,15 +77,15 @@ const apiUtil = (() => {
 
     const reqestHeaders: HeadersInit = new Headers();
     headers?.forEach((value, key) => {
-      reqestHeaders.set(key, value);
+      reqestHeaders.append(key, value);// Directly assign key-value pairs
     });
+
     return reqestHeaders;
   };
 
   return {
     API,
-    get,
-    post
+    get, post, put
   }
 })();
 

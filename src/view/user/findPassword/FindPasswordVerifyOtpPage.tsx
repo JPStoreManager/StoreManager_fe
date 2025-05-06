@@ -1,22 +1,30 @@
 import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { Button, Form, Grid, Input, theme, Typography } from "antd";
 import { ContentLayoutComp } from "../../../type/layout";
 import LoginContentLayout from "../../../layout/login/LoginContentLayout";
 import { useAlertPopup } from "../../common/AlertPopup";
-import { sendOtp, SendOtpResponse } from "./FindPassword";
 import { ResultResponse } from "../../../component/util/ApiResponse";
-import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { VerifyOtpRequest, verifyOtp, VerifyOtpResponse, saveFindPwSessionId } from "./FindPassword";
+import { findPwVeirfyOtp } from "../../../auth/state";
+import PagePath from "../../../route/PagePath";
+
 
 const FindPasswordVerifyOtpPage:React.FC = () => {
   const { useToken } = theme;
   const { useBreakpoint } = Grid;
   const { Text, Title } = Typography;
+
   const { token } = useToken();
   const screens = useBreakpoint();
   const alertPopup = useAlertPopup();
   const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch = useDispatch();
+  const [form] = Form.useForm();
+  const [showLoading, setShowLoading] = useState(false);
 
   const styles = {
     title: {
@@ -24,41 +32,54 @@ const FindPasswordVerifyOtpPage:React.FC = () => {
     } as React.CSSProperties,
   };
 
-  const findPasswordHandler = async ({userId, email}: {userId: string, email: string}) => {    
-    const sendOtpResult: SendOtpResponse = await sendOtp({userId, email});
-    if(sendOtpResult?.result === ResultResponse.YES) _handleSendOtpSuccess(sendOtpResult);
-    else _handleSendOtpFail();
+  const findPasswordVerifyOtpHandler = async ({userId, email, otp}: VerifyOtpRequest) => {    
+    setShowLoading(true);
+    const verifyOtpResult: VerifyOtpResponse = await verifyOtp({userId, email, otp}).catch((error) => { console.log(error); return error });;
+    setShowLoading(false);
+
+    if(verifyOtpResult?.result === ResultResponse.YES) _handleVerifyOtpSuccess(verifyOtpResult);
+    else _handleVerifyOtpFail();
   };
 
-  const _handleSendOtpSuccess = (sendOtpResult: SendOtpResponse) => {
-    sessionStorage.setItem('sessionId', sendOtpResult.sessionId);
-    navigate('/findPassword/otp/verify');
+  const _handleVerifyOtpSuccess = (verifyOtpResult: VerifyOtpResponse) => {
+    saveFindPwSessionId(verifyOtpResult.sessionId);
+    
+    dispatch(findPwVeirfyOtp({
+        userId: form.getFieldValue('userId'),
+        email: form.getFieldValue('email'),
+    }));
+    navigate(PagePath.USER.FIND_PW_UPDATE_PW);
   };
 
-  const _handleSendOtpFail = () => {
-    alertPopup.error('Find Password Fail Notification', 'The id or email is incorrect. Please check your id and email.', 'top');
+  const _handleVerifyOtpFail = () => {
+    alertPopup.error({
+      message: 'Find Password Fail Notification', 
+      description: 'The OTP number is incorrect. Please check your otp number.', 
+      placement: 'top'
+    });
   };
   
   const title = (<>
     <Title style={styles.title}>Find password</Title>
     <div className="description">
       <Text>
-        Please enter your email and name below to find you password.  
+        Please enter OTP number below to verify it.  
       </Text> 
     </div>
   </>);
   
   const content = (<>
+    {alertPopup.contextHolder}
     <Form className="content" 
             name="normal_login"
-            onFinish={findPasswordHandler}
+            onFinish={findPasswordVerifyOtpHandler}
             initialValues={{
-              remember: true,
-              userId: location.state?.userId,
-              email: location.state?.email,
+              userId: useSelector((state: any) => state.auth.payload.findPw.userId),
+              email: useSelector((state: any) => state.auth.payload.findPw.email),
             }}
             layout="vertical"
             requiredMark="optional"
+            form={form}
         >
           <Form.Item name="userId"
             hidden={true}
@@ -108,7 +129,7 @@ const FindPasswordVerifyOtpPage:React.FC = () => {
         </Form>
   </>);
 
-  const contentComp:ContentLayoutComp = {title, content};
+  const contentComp:ContentLayoutComp = {title, content, showLoading};
 
   return <LoginContentLayout {...contentComp} />
 }

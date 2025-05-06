@@ -8,32 +8,44 @@ export const useAlertPopup = () => {
 
   return {
     contextHolder,
-    success: (title: string, msg: string, placement: NotificationPlacement) => {
+    success: (config: NotificationArgsProps) => {
       api.success({
-        message: title,
-        description: msg,
-        placement,
+        message: config.message,
+        description: config.description,
+        placement: config.placement,
+        btn: config.btn,
+        onClick: config.onClick,
+        onClose: config.onClose,
       });
     },
-    info: (title: string, msg: string, placement: NotificationPlacement) => {
+    info: (config: NotificationArgsProps) => {
       api.info({
-        message: title,
-        description: msg,
-        placement,
+        message: config.message,
+        description: config.description,
+        placement: config.placement,
+        btn: config.btn,
+        onClick: config.onClick,
+        onClose: config.onClose,
       });
     },
-    warning: (title: string, msg: string, placement: NotificationPlacement) => {
+    warning: (config: NotificationArgsProps) => {
       api.warning({
-        message: title,
-        description: msg,
-        placement,
+        message: config.message,
+        description: config.description,
+        placement: config.placement,
+        btn: config.btn,
+        onClick: config.onClick,
+        onClose: config.onClose,
       });
     },
-    error: (title: string, msg: string, placement: NotificationPlacement) => {
+    error: (config: NotificationArgsProps) => {
       api.error({
-        message: title,
-        description: msg,
-        placement,
+        message: config.message,
+        description: config.description,
+        placement: config.placement,
+        btn: config.btn,
+        onClick: config.onClick,
+        onClose: config.onClose,
       });
     }
   };

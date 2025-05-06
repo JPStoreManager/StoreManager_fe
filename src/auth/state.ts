@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface AuthPermissions {
-  canAccessFindPassword: boolean;
+  canAccessFindPasswordVerifyOtp: boolean;
+  canAccessFindPasswordUpdatePw: boolean;
 };
 
 interface AuthState {
@@ -24,7 +25,8 @@ interface Action {
 const initialState: AuthState = {
   loginToken: '',
   permissions: {
-    canAccessFindPassword: false,
+    canAccessFindPasswordVerifyOtp: false,
+    canAccessFindPasswordUpdatePw: false,
   },
   payload: {
     findPw: {
@@ -45,18 +47,25 @@ const authStatus = createSlice({
       state.loginToken = '';
       // localStorage에서도 토큰 삭제
     },
-    findPwStart(state, action) {
-      state.permissions.canAccessFindPassword = true;
+    findPwSendOtp(state, action) {
+      state.permissions.canAccessFindPasswordVerifyOtp = true;
+      state.permissions.canAccessFindPasswordUpdatePw = false;
       state.payload.findPw = action.payload;
     },
-    findPwEnd(state) {
-      state.permissions.canAccessFindPassword = false;
+    findPwVeirfyOtp(state, action) {
+      state.permissions.canAccessFindPasswordVerifyOtp = true;
+      state.permissions.canAccessFindPasswordUpdatePw = true;
+      state.payload.findPw = action.payload;
+    },
+    findPwUpdatePw(state) {
+      state.permissions.canAccessFindPasswordVerifyOtp = false;
+      state.permissions.canAccessFindPasswordUpdatePw = false;
       state.payload.findPw = { userId: '', email: '' };
     }
   }
 });
 
 export default authStatus.reducer;
-export const { login, logout, findPwStart, findPwEnd } = authStatus.actions;
+export const { login, logout, findPwSendOtp, findPwVeirfyOtp, findPwUpdatePw } = authStatus.actions;
 export { authStatus };
 export type { AuthState };

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "./Login";
 import ContentLayout from "../../../layout/login/LoginContentLayout";
 import { useAlertPopup } from "../../common/AlertPopup";
+import PagePath from "../../../route/PagePath";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -29,12 +30,16 @@ export default function Login() {
   };
 
   const _handleLoginSuccess = () => {
-    navigate('/sales/month');
+    navigate(PagePath.SALES.MONTH);
   };
 
   const _handleLoginFail = () => {
     form.resetFields();
-    alertPopup.error('Login Fail Notification', 'The id or password is incorrect. Please check your id and password.', 'top');
+    alertPopup.error({
+      message: 'Login Fail Notification',
+      description: 'The id or password is incorrect. Please check your id and password.', 
+      placement: 'top'
+    });
   };
 
 
@@ -114,7 +119,7 @@ export default function Login() {
     </Text>
   </>);
 
-  const contentComp = { title, content, footer };
+  const contentComp = { title, content, footer, showLoading };
 
   return <ContentLayout {...contentComp}/>
 }
