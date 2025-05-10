@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from '../layout/main/MainLayout';
 import SalesMonth from '../view/sales/month/SalesMonthPage';
-import SalesYear from '../view/sales/year/SalesYear';
+import SalesYear from '../view/sales/year/SalesYearPage';
 import ExpenseMonth from '../view/expense/ExpenseMonthPage';
 import ExpenseYear from '../view/expense/ExpenseYearPage';
 import ManageWorker from '../view/manage/ManageWorkerPage';
