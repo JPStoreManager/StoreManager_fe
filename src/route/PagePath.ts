@@ -7,6 +7,9 @@ const PagePath = {
     },
     SALES: {
       MONTH: '/sales/month',
+    },
+    AUTH: {
+        UNAUTHORIZED: '/unauthorized'
     }
 };
 

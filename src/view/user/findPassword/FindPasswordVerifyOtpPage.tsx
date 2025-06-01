@@ -9,7 +9,7 @@ import { useAlertPopup } from "../../common/AlertPopup";
 import { ResultResponse } from "../../../component/util/ApiResponse";
 import { useSelector } from "react-redux";
 import { VerifyOtpRequest, verifyOtp, VerifyOtpResponse, saveFindPwSessionId } from "./FindPassword";
-import { findPwVeirfyOtp } from "../../../auth/state";
+import { findPwVerifyOtp } from "../../../auth/state";
 import PagePath from "../../../route/PagePath";
 
 
@@ -44,7 +44,7 @@ const FindPasswordVerifyOtpPage:React.FC = () => {
   const _handleVerifyOtpSuccess = (verifyOtpResult: VerifyOtpResponse) => {
     saveFindPwSessionId(verifyOtpResult.sessionId);
     
-    dispatch(findPwVeirfyOtp({
+    dispatch(findPwVerifyOtp({
         userId: form.getFieldValue('userId'),
         email: form.getFieldValue('email'),
     }));

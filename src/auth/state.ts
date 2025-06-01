@@ -1,71 +1,83 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import apiUtil from '../component/util/ApiUtil'
 
 interface AuthPermissions {
-  canAccessFindPasswordVerifyOtp: boolean;
-  canAccessFindPasswordUpdatePw: boolean;
-};
+  isUserLoggedIn: boolean
+  canAccessFindPasswordVerifyOtp: boolean
+  canAccessFindPasswordUpdatePw: boolean
+}
 
 interface AuthState {
-  loginToken: string;
-  permissions: AuthPermissions,
+  permissions: AuthPermissions
   payload: {
-    findPw: {
-      userId: string;
-      email: string;
-    }
+    login: { userId: string }
+    findPw: { userId: string; email: string }
   }
-};
-
-interface Action {
-  payload: {[prop: string]: any}
-};
-
-// TODO localstorage에서 loginToken을 가져온 후 매핑시키기 (로그인 유지 기능)
+  loading: boolean
+}
 
 const initialState: AuthState = {
-  loginToken: '',
   permissions: {
+    isUserLoggedIn: false,
     canAccessFindPasswordVerifyOtp: false,
     canAccessFindPasswordUpdatePw: false,
   },
   payload: {
-    findPw: {
-      userId: '',
-      email: '',
+    login: { userId: '' },
+    findPw: { userId: '', email: '' },
+  },
+  loading: false,
+}
+
+const checkAuth = async (): Promise<{userId: string}> => {
+    const response = await apiUtil.get(apiUtil.API.AUTH.AUTHORIZATION.path);
+
+    if (response.ok) {
+      const data = await response.json();
+      return { userId: data.userId };
+    } else {
+      return { userId: '' };
     }
-  }
 };
 
 const authStatus = createSlice({
   name: 'auth',
-  initialState: initialState,
+  initialState,
   reducers: {
-    login(state, action) {
-      state.loginToken = action.payload.loginToken;
+    login(state, action: PayloadAction<{ userId: string }>) {
+      state.permissions.isUserLoggedIn = true
+      state.payload.login.userId = action.payload.userId
     },
     logout(state) {
-      state.loginToken = '';
-      // localStorage에서도 토큰 삭제
+      state.permissions.isUserLoggedIn = false
+      state.payload.login.userId = ''
     },
+    // --- findPw 관련 리듀서는 동일 ---
     findPwSendOtp(state, action) {
-      state.permissions.canAccessFindPasswordVerifyOtp = true;
-      state.permissions.canAccessFindPasswordUpdatePw = false;
-      state.payload.findPw = action.payload;
+      state.permissions.canAccessFindPasswordVerifyOtp = true
+      state.permissions.canAccessFindPasswordUpdatePw = false
+      state.payload.findPw = action.payload
     },
-    findPwVeirfyOtp(state, action) {
-      state.permissions.canAccessFindPasswordVerifyOtp = true;
-      state.permissions.canAccessFindPasswordUpdatePw = true;
-      state.payload.findPw = action.payload;
+    findPwVerifyOtp(state, action) {
+      state.permissions.canAccessFindPasswordVerifyOtp = true
+      state.permissions.canAccessFindPasswordUpdatePw = true
+      state.payload.findPw = action.payload
     },
     findPwUpdatePw(state) {
-      state.permissions.canAccessFindPasswordVerifyOtp = false;
-      state.permissions.canAccessFindPasswordUpdatePw = false;
-      state.payload.findPw = { userId: '', email: '' };
-    }
-  }
-});
+      state.permissions.canAccessFindPasswordVerifyOtp = false
+      state.permissions.canAccessFindPasswordUpdatePw = false
+      state.payload.findPw = { userId: '', email: '' }
+    },
+  },
+})
 
+export const {
+  login,
+  logout,
+  findPwSendOtp,
+  findPwVerifyOtp,
+  findPwUpdatePw,
+} = authStatus.actions;
+export {checkAuth};
 export default authStatus.reducer;
-export const { login, logout, findPwSendOtp, findPwVeirfyOtp, findPwUpdatePw } = authStatus.actions;
-export { authStatus };
 export type { AuthState };

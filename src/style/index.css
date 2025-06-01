@@ -11,3 +11,7 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.summary-table table .ant-table-tbody .ant-table-row .ant-table-cell:first-child {
+  background-color: #fafafa;
+}
