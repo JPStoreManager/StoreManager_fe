@@ -1,3 +1,4 @@
+
 const apiUtil = (() => {
   const SERVER_HOST = 'http://localhost:8080';
 
@@ -26,6 +27,12 @@ const apiUtil = (() => {
         path: '/user/find/pw',
         method: HTTP_METHOD.PUT
       },
+    },
+    AUTH: {
+      AUTHORIZATION: {
+        path: '/auth/me',
+        method: HTTP_METHOD.GET
+      }
     }
   };
 

@@ -14,6 +14,8 @@ import FindPasswordSendOtpPage from '../view/user/findPassword/FindPasswordSendO
 import FindPwProtectedRoute from './FindPwProtectedRoute';
 import FindPasswordVerifyOtpPage from '../view/user/findPassword/FindPasswordVerifyOtpPage';
 import FindPasswordUpdatePwPage from '../view/user/findPassword/FindPasswordUpdatePwPage';
+import LoginProtectedRoute from './LoginProtectedRoute';
+import UnauthorizedPage from '../view/common/UnauthorizedPage';
 
 const AppRouter: React.FC = () => {
 	const mainLayout = <MainLayout/>;
@@ -37,6 +39,7 @@ const AppRouter: React.FC = () => {
 	return (
 		<BrowserRouter>
 			<Routes>
+				<Route path='unauthorized' element={<UnauthorizedPage />} />
 				<Route path='login' element={loginLayout}>
 					<Route path='' element={login}></Route>
 				</Route>
@@ -45,7 +48,7 @@ const AppRouter: React.FC = () => {
 					<Route path='otp/verify' element={<FindPwProtectedRoute>{findPasswordVerifyOtpPage}</FindPwProtectedRoute>}></Route>
 					<Route path='new' element={<FindPwProtectedRoute>{findPasswordUpdatePwPage}</FindPwProtectedRoute>}></Route>
 				</Route>
-				<Route path='' element={mainLayout}>
+				<Route path='' element={<LoginProtectedRoute>{mainLayout}</LoginProtectedRoute>}>
 					<Route path='sales'>
 						<Route path='year' element={salesYear}></Route>
 						<Route path='month' element={salesMonth}></Route>
