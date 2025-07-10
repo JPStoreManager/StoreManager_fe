@@ -8,22 +8,25 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^16.18.96",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "antd": "^5.16.5",
+    "dayjs": "^1.11.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.23.1",
-    "react-scripts": "5.0.1",
     "redux": "^5.0.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build"
+    "run:local": "vite --mode local",
+    "run:dev": "vite --mode dev",
+    "run:prd": "vite --mode prd",
+    "build:dev": "vite build --mode dev",
+    "build:prd": "vite build --mode prd",
+    "serve": "vite preview"
   },
   "eslintConfig": {
     "extends": [
@@ -44,7 +47,10 @@
     ]
   },
   "devDependencies": {
-    "pm2": "^5.4.2"
+    "@types/node": "^24.0.10",
+    "@vitejs/plugin-react": "^4.6.0",
+    "pm2": "^5.4.2",
+    "vite": "^7.0.3"
   },
   "description": "기술 스택: React, TypeScript",
   "author": "",

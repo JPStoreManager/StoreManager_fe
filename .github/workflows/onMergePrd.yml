@@ -1,0 +1,58 @@
+name: Dev CI/CD for React App
+
+on:
+  pull_request:
+    types: [closed]
+    branches: 
+      - 'develop'
+
+# 환경 변수 (본인 환경에 맞게 수정)
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  S3_BUCKET_NAME: ${{ secrets.S3_FRNT_BUCKET_NM }}
+
+jobs:
+  build-and-deploy:
+    # PR이 merge 되었고, head 브랜치가 'feat/'로 시작할 때만 실행
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout develop branch
+        uses: actions/checkout@v4
+        with:
+          ref: 'develop'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Cache npm dependencies
+        id: cache-npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          # 캐시 식별을 위한 키. package-lock.json이 변경되면 새로운 캐시 생성
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package.json') }}
+
+          restore-keys: |
+            ${{ runner.os }}-npm-
+
+      - name: Install dependencies
+        # cache-npm 단계의 출력을 확인하여 캐시가 없는 경우에만 실행
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+        run: npm i
+
+      - name: Build React App
+        run: npm run build:prd
+
+      - name: Login to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Upload to S3
+        run: |
+          aws s3 sync ./build s3://${{ env.S3_BUCKET_NAME }} --delete
