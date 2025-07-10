@@ -13,7 +13,6 @@ env:
 
 jobs:
   build-and-deploy:
-    # PR이 merge 되었고, head 브랜치가 'feat/'로 시작할 때만 실행
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
@@ -32,15 +31,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          # 캐시 식별을 위한 키. package-lock.json이 변경되면 새로운 캐시 생성
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package.json') }}
-
           restore-keys: |
             ${{ runner.os }}-npm-
 
       - name: Install dependencies
-        # cache-npm 단계의 출력을 확인하여 캐시가 없는 경우에만 실행
-        if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm i
 
       - name: Build React App
