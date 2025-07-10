@@ -1,71 +1,71 @@
-name: On Merge to Develop
-# on: 
-#   push
-on:
-  pull_request:
-    types: [closed]
-    branches: 
-    - 'develop'
+# name: On Merge to Develop
+# # on: 
+# #   push
+# on:
+#   pull_request:
+#     types: [closed]
+#     branches: 
+#     - 'develop'
 
 
-jobs:
-  deploy:
-    if: github.event.pull_request.merged == true
+# jobs:
+#   deploy:
+#     if: github.event.pull_request.merged == true
 
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start deploy
-        run: echo "Start deploy..."
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Start deploy
+#         run: echo "Start deploy..."
 
-      - name: Checkout branch
-        uses: actions/checkout@v3
+#       - name: Checkout branch
+#         uses: actions/checkout@v3
 
-      - name: Cache yarn modules
-        id: cache-yarn
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-yarn-modules
-        with:
-          # yarn cache files are stored in `~/.cache/yarn` on Linux/macOS
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+#       - name: Cache yarn modules
+#         id: cache-yarn
+#         uses: actions/cache@v3
+#         env:
+#           cache-name: cache-yarn-modules
+#         with:
+#           # yarn cache files are stored in `~/.cache/yarn` on Linux/macOS
+#           path: ~/.cache/yarn
+#           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+#           restore-keys: |
+#             ${{ runner.os }}-build-${{ env.cache-name }}-
+#             ${{ runner.os }}-build-
+#             ${{ runner.os }}-
 
-      - if: ${{ steps.cache-yarn.outputs.cache-hit != 'true' }}
-        name: List the state of yarn modules
-        continue-on-error: true
-        run: yarn list
+#       - if: ${{ steps.cache-yarn.outputs.cache-hit != 'true' }}
+#         name: List the state of yarn modules
+#         continue-on-error: true
+#         run: yarn list
 
-      - name: Install dependencies
-        run: yarn install
+#       - name: Install dependencies
+#         run: yarn install
       
-      - name: Build application
-        run: yarn build
-        env:
-          CI: false
+#       - name: Build application
+#         run: yarn build
+#         env:
+#           CI: false
       
-      - name: Create project zip file
-        run: zip -qq -r ./storeManager_fe.zip .
+#       - name: Create project zip file
+#         run: zip -qq -r ./storeManager_fe.zip .
       
-      - name: Access to AWS
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+#       - name: Access to AWS
+#         uses: aws-actions/configure-aws-credentials@v1
+#         with:
+#           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#           aws-region: ap-northeast-2
           
-      - name: Upload zip file to S3
-        run: aws s3 cp --region ap-northeast-2 ./storeManager_fe.zip s3://${{ secrets.S3_BUCKET_NAME }}/${{ secrets.S3_BUCKET_DIR_NAME }}/storeManager_fe.zip
+#       - name: Upload zip file to S3
+#         run: aws s3 cp --region ap-northeast-2 ./storeManager_fe.zip s3://${{ secrets.S3_BUCKET_NAME }}/${{ secrets.S3_BUCKET_DIR_NAME }}/storeManager_fe.zip
          
-      - name: Deploy to EC2 with CodeDeploy
-        run: aws deploy create-deployment
-             --application-name StoreManager_CodeDeploy
-             --deployment-config-name CodeDeployDefault.AllAtOnce
-             --deployment-group-name ${{ secrets.DEPLOYMENT_GROUP_NAME }}
-             --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=${{ secrets.S3_BUCKET_DIR_NAME }}/storeManager_fe.zip
+#       - name: Deploy to EC2 with CodeDeploy
+#         run: aws deploy create-deployment
+#              --application-name StoreManager_CodeDeploy
+#              --deployment-config-name CodeDeployDefault.AllAtOnce
+#              --deployment-group-name ${{ secrets.DEPLOYMENT_GROUP_NAME }}
+#              --s3-location bucket=${{ secrets.S3_BUCKET_NAME }},bundleType=zip,key=${{ secrets.S3_BUCKET_DIR_NAME }}/storeManager_fe.zip
 
-      - name: End deploy
-        run: echo "End deploy..." 
+#       - name: End deploy
+#         run: echo "End deploy..." 

@@ -1,0 +1,9 @@
+.github/workflows/onMegerAction.yml
+.gitignore
+dist/364.bundle.js
+dist/bundle.js
+dist/bundle.js.LICENSE.txt
+package-lock.json
+package.json
+public/index.html
+yarn.lock
