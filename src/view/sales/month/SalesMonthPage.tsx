@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, Typography, Space, Card, TableProps } from 'antd';
 import dayjs from 'dayjs';
-import { DailySalesTableColType, WeeklySalesSummaryTableColType, MonthlySalesTotalTableColType } from '../../../type/sales';
+import { DailySalesTableColType, WeeklySalesSummaryTableColType, MonthlySalesTotalTableColType } from '../../../model/sales';
 import { PeriodHeader } from '../SalesCommon';
+import { getMonthlySales } from '../../../api/sales/MonthlySales';
+import { Spin } from 'antd';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
@@ -39,10 +42,23 @@ const monthlyTotalTableCols: TableProps<MonthlySalesTotalTableColType>['columns'
   { title: '총이익', dataIndex: 'totalProfit', key: 'totalProfit', align: 'right' as const }
 ];
 
-const MonthlySales: React.FC = () => {
-  const [month, setMonth] = useState(dayjs());
-  const [store, setStore] = useState('seoul');
+const SalesMonthPage: React.FC = () => {
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [storeCode, setStoreCode] = useState('seoul');
   const [fileFormat, setFileFormat] = useState('excel');
+  const [showLoading, setShowLoading] = useState(false);
+  
+  useEffect(() => {
+    const year = selectedDate.get('year');
+    const month = selectedDate.get('month') + 1; // dayjs month is 0-indexed
+    setShowLoading(true);
+    getMonthlySales('SEOCHO', year, month).then(response => {
+      // TODO: Handle the response and update the state
+      console.log(response);
+    }).finally(() => {
+      setShowLoading(false);
+    });
+  }, [selectedDate, storeCode]);
 
   // TODO: Fetch data based on year and store
   const storeOptions = [
@@ -91,11 +107,11 @@ const MonthlySales: React.FC = () => {
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <PeriodHeader
         title="년별 매출"
-        period={month}
-        onPrev={() => setMonth(y => y.subtract(1, 'month'))}
-        onNext={() => setMonth(y => y.add(1, 'month'))}
-        store={store}
-        onChangeStore={setStore}
+        period={selectedDate}
+        onPrev={() => setSelectedDate(y => y.subtract(1, 'month'))}
+        onNext={() => setSelectedDate(y => y.add(1, 'month'))}
+        store={storeCode}
+        onChangeStore={setStoreCode}
         fileFormat={fileFormat}
         onChangeFormat={setFileFormat}
         formatDisplay="YYYY.MM"
@@ -148,8 +164,11 @@ const MonthlySales: React.FC = () => {
           pagination={false}
         />
       </Card>
+      <Space className="loading">
+        {showLoading && <Spin fullscreen indicator={<LoadingOutlined style={{ fontSize: 80 }} spin />} />}
+      </Space>
     </Space>
   );
 };
 
-export default MonthlySales;
+export default SalesMonthPage;

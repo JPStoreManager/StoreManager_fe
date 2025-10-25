@@ -1,7 +1,7 @@
 import { Typography } from 'antd';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Col, Row, Select, Space } from 'antd';
-import { PeriodHeaderProps } from '../../type/sales';
+import { PeriodHeaderProps } from '../../model/sales';
 
 const { Title, Text } = Typography;
 

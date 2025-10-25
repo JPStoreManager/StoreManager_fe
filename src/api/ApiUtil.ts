@@ -1,6 +1,7 @@
 
 const apiUtil = (() => {
-  const SERVER_HOST = 'http://localhost:8080';
+  // const SERVER_HOST = 'http://localhost:8080';
+  const SERVER_HOST = (import.meta as any).env.VITE_API_SERVER_URL;
 
   const HTTP_METHOD = {
     GET: 'GET',
@@ -12,25 +13,35 @@ const apiUtil = (() => {
   const API = {
     USER: {
       LOGIN: {
-        path: '/user/login',
+        path: '/api/v1/user/login',
+        method: HTTP_METHOD.GET
+      },
+      LOGOUT: {
+        path: '/api/v1/user/logout',
         method: HTTP_METHOD.POST
       },
       FIND_PW_SEND_OTP: {
-        path: '/user/find/pw/otp/send',
+        path: '/api/v1/user/find/pw/otp/send',
         method: HTTP_METHOD.POST
       },
       FIND_PW_VERIFY_OTP: {
-        path: '/user/find/pw/otp/verify',
+        path: '/api/v1/user/find/pw/otp/verify',
         method: HTTP_METHOD.POST
       },
       FIND_PW_UPDATE_PW: {
-        path: '/user/find/pw',
+        path: '/api/v1/user/find/pw',
         method: HTTP_METHOD.PUT
       },
     },
     AUTH: {
       AUTHORIZATION: {
         path: '/auth/me',
+        method: HTTP_METHOD.GET
+      }
+    },
+    SALES: {
+      MONTH: {
+        path: '/api/v1/sales/month',
         method: HTTP_METHOD.GET
       }
     }

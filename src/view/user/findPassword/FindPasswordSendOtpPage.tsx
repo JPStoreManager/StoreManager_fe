@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import { Button, Form, Grid, Input, theme, Typography } from "antd";
-import { ContentLayoutComp } from "../../../type/layout";
-import LoginContentLayout from "../../../layout/login/LoginContentLayout";
+import { ContentLayoutComp } from "../../../model/layout";
+import LoginContentLayout from "../../../component/login/LoginContentLayout";
 import { useAlertPopup } from "../../common/AlertPopup";
-import { saveFindPwSessionId, sendOtp, SendOtpResponse } from "./FindPassword";
-import { ResultResponse } from "../../../component/util/ApiResponse";
+import { saveFindPwSessionId, sendOtp, SendOtpResponse } from "../../../api/user/findPw/FindPassword";
+import { ResultResponse } from "../../../api/ApiResponse";
 import { findPwSendOtp } from "../../../auth/state";
 import PagePath from "../../../route/PagePath";
 

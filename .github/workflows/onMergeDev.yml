@@ -39,7 +39,7 @@ jobs:
         run: npm i
 
       - name: Build React App
-        run: npm run build:prd
+        run: npm run build:dev
 
       - name: Login to AWS
         uses: aws-actions/configure-aws-credentials@v4

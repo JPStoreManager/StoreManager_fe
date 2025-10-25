@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { Dropdown, Menu } from 'antd';
-import { Option } from "../../type/layout";
+import { Option } from "../../model/layout";
 
 const HeaderLogo: React.FC = () => {
   const navigator = useNavigate();

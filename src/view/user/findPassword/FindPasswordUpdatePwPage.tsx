@@ -2,11 +2,11 @@ import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 import { Button, Form, Grid, Input, theme, Typography } from "antd";
-import { ContentLayoutComp } from "../../../type/layout";
-import LoginContentLayout from "../../../layout/login/LoginContentLayout";
+import { ContentLayoutComp } from "../../../model/layout";
+import LoginContentLayout from "../../../component/login/LoginContentLayout";
 import { useAlertPopup } from "../../common/AlertPopup";
-import { updatePw, saveFindPwSessionId, UpdatePwRequest, UpdatePwResponse } from "./FindPassword";
-import { ResultResponse } from "../../../component/util/ApiResponse";
+import { updatePw, saveFindPwSessionId, UpdatePwRequest, UpdatePwResponse } from "../../../api/user/findPw/FindPassword";
+import { ResultResponse } from "../../../api/ApiResponse";
 import { useDispatch } from "react-redux";
 import { findPwUpdatePw } from "../../../auth/state";
 import { useSelector } from "react-redux";

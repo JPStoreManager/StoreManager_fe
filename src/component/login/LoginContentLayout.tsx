@@ -1,7 +1,7 @@
 import { theme, Spin } from "antd";
 import { LoadingOutlined } from '@ant-design/icons';
 
-import { ContentLayoutComp } from "../../type/layout";
+import { ContentLayoutComp } from "../../model/layout";
 
 const LoginContentLayout: React.FC<ContentLayoutComp> = ({title, content, footer, showLoading}) => {
 
