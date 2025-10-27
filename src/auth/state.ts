@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
-import apiUtil from '../component/util/ApiUtil'
+import apiUtil from '../api/ApiUtil'
 
 interface AuthPermissions {
   isUserLoggedIn: boolean
@@ -33,8 +33,8 @@ const checkAuth = async (): Promise<{userId: string}> => {
     const response = await apiUtil.get(apiUtil.API.AUTH.AUTHORIZATION.path);
 
     if (response.ok) {
-      const data = await response.json();
-      return { userId: data.userId };
+      const responseBody = await response.json();
+      return { userId: responseBody.data.userId };
     } else {
       return { userId: '' };
     }

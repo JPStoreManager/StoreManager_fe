@@ -1,5 +1,5 @@
-import apiUtil from '../../../component/util/ApiUtil'
-import { ResultResponse } from '../../../component/util/ApiResponse';
+import apiUtil from '../../ApiUtil'
+import { ResultResponse } from '../../ApiResponse';
 
 const FIND_PW_HEADER: string = 'jp_fpw_id'
 const FIND_PW_SESSION_ID: string = 'sessionId';

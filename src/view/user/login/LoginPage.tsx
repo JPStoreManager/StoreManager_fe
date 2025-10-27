@@ -3,12 +3,13 @@ import React, { useState } from "react";
 import { Button, Checkbox, Form, Grid, Input, theme, Typography } from "antd";
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { login } from "./Login";
-import ContentLayout from "../../../layout/login/LoginContentLayout";
+import { login } from "../../../api/user/login/Login";
+import ContentLayout from "../../../component/login/LoginContentLayout";
 import { useAlertPopup } from "../../common/AlertPopup";
 import PagePath from "../../../route/PagePath";
 import { useDispatch} from "react-redux";
 import { login as loginAction } from "../../../auth/state";
+import { ApiResponse, ResultResponse } from "../../../api/ApiResponse";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -25,10 +26,10 @@ export default function Login() {
 
   const loginHandler = async ({id, password, remember}: {id: string, password: string, remember: boolean}) => {    
     setShowLoading(true);
-    const loginResult = await login({id, password});
+    const loginResult: ApiResponse<void> = await login({id, password});
     setShowLoading(false);
 
-    if(loginResult) _handleLoginSuccess(id);
+    if(loginResult.result === ResultResponse.YES) _handleLoginSuccess(id);
     else _handleLoginFail();
   };
 

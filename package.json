@@ -21,9 +21,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "run:local": "vite --mode local",
-    "run:dev": "vite --mode dev",
-    "run:prd": "vite --mode prd",
+    "start:local": "vite",
+    "start:dev": "vite --mode dev",
+    "start:prd": "vite --mode prd",
     "build:dev": "vite build --mode dev",
     "build:prd": "vite build --mode prd",
     "serve": "vite preview"

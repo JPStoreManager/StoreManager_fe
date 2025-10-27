@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Table, Typography, Space, Card, TableProps} from 'antd';
 import dayjs from 'dayjs';
-import { YearlyTotalTableColType, YearlySummaryTableColType, MonthlySalesTableColType, MonthlyExpenseTableColType } from '../../../type/sales';
+import { YearlyTotalTableColType, YearlySummaryTableColType, MonthlySalesTableColType, MonthlyExpenseTableColType } from '../../../model/sales';
 import { PeriodHeader } from '../SalesCommon';
 
 const { Title } = Typography;
