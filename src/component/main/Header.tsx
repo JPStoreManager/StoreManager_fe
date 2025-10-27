@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { Dropdown, Menu } from 'antd';
-import { Option } from "../../model/layout";
+import { Dropdown, MenuProps } from 'antd';
 
 const HeaderLogo: React.FC = () => {
   const navigator = useNavigate();
@@ -12,34 +11,40 @@ const HeaderLogo: React.FC = () => {
   )
 }
 
-const TextSelectBox: React.FC<{ options: Option[] }> = ({ options }) => {
-  const menu = (
-    <Menu>
-      {options.map(option => (
-        <Menu.Item key={option.value}>{option.label}</Menu.Item>
-      ))}
-    </Menu>
-  );
+const TextSelectBox = () => {
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: 'Profile',
+    },
+    {
+      key: '2',
+      label: 'Logout',
+      danger: true,
+    },
+  ];
+
+  const handleMenuClick: MenuProps['onClick'] = (e) => {
+    console.log('click', e.key);
+  };
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
 
   return (
-    <Dropdown overlay={menu} trigger={['click']}>
+    <Dropdown menu={menuProps} trigger={['click']}>
       <span style={{ cursor: 'pointer' }}>user name</span>
     </Dropdown>
   );
 };
 
-// 사용 예시
-const options: Option[] = [
-  { value: '1', label: 'Option 1' },
-  { value: '2', label: 'Option 2' },
-  { value: '3', label: 'Option 3' },
-];
-
 const HeaderUser: React.FC = () => {
   return (
     <div className='header-user-name'>
       <div className="app">
-        <TextSelectBox options={options} />
+        <TextSelectBox />
       </div>
     </div>
   );

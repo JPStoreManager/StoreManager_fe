@@ -1,10 +1,5 @@
 import { ReactNode } from "react";
 
-interface Option {
-  value: string;
-  label: string;
-}
-
 interface ContentLayoutComp {
   title: JSX.Element;
   content: JSX.Element;
@@ -13,4 +8,4 @@ interface ContentLayoutComp {
 }
 
 
-export type {Option, ContentLayoutComp};
+export type {ContentLayoutComp};

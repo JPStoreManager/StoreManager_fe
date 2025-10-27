@@ -1,92 +1,42 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Typography, Space, Card, TableProps } from 'antd';
-import dayjs from 'dayjs';
-import { DailySalesTableColType, WeeklySalesSummaryTableColType, MonthlySalesTotalTableColType } from '../../../model/sales';
+import { Table, Typography, Space, Card } from 'antd';
+import { WeeklySalesSummaryTableColType, MonthlySalesTotalTableColType } from '../../../model/sales';
 import { PeriodHeader } from '../SalesCommon';
-import { getMonthlySales } from '../../../api/sales/MonthlySales';
+import { getMonthlySales, GetMonthlySalesResponse, MonthDailySales } from '../../../api/sales/MonthlySales';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
+import { getNow } from '../../../util/DateUtils';
+import { dailySalesTableCols, weeklySummaryTableCols, monthlyTotalTableCols, formatDailySales, formatWeeklySalesSummary, formatMonthlyTotal } from '../../../const/sales/SalesMonthGrid';
+import { addComma } from '../../../util/MoneyUtils';
 
 const { Title } = Typography;
 
-const dailySalesTableCols: TableProps<DailySalesTableColType>['columns'] = [
-  { title: '날짜', dataIndex: 'date', key: 'date', width: 70 },
-  { title: '요일', dataIndex: 'day', key: 'day', width: 60 },
-  { title: '현금', dataIndex: 'cash', key: 'cash', align: 'right' as const },
-  { title: '카드', dataIndex: 'card', key: 'card', align: 'right' as const },
-  { title: '매출액계', dataIndex: 'salesTotal', key: 'salesTotal', align: 'right' as const },
-  { title: '주간매출액계', dataIndex: 'weeklySalesTotal', key: 'weeklySalesTotal', align: 'right' as const },
-  { title: '매출누계', dataIndex: 'cumulativeSales', key: 'cumulativeSales', align: 'right' as const },
-  { title: '카드%', dataIndex: 'cardPercent', key: 'cardPercent', align: 'right' as const, render: (value: number) => `${value}%` },
-  { title: '매입지출', dataIndex: 'purchase', key: 'purchase', align: 'right' as const },
-  { title: '매입누계', dataIndex: 'cumulativePurchase', key: 'cumulativePurchase', align: 'right' as const },
-  { title: '변동비', dataIndex: 'variableCost', key: 'variableCost', align: 'right' as const },
-  { title: '변동비누계', dataIndex: 'variableCostCumulative', key: 'variableCostCumulative', align: 'right' as const },
-  { title: '비고', dataIndex: 'note', key: 'note' }
-];
-
-const weeklySummaryTableCols: TableProps<WeeklySalesSummaryTableColType>['columns'] = [
-  { title: '', dataIndex: 'week', key: 'week', width: 90},
-  { title: '주간 일평균', dataIndex: 'weeklyAvg', key: 'weeklyAvg', align: 'right' as const },
-  { title: '예상 주간/월매출', dataIndex: 'forecast', key: 'forecast', align: 'right' as const },
-  { title: '매입지출', dataIndex: 'purchaseCost', key: 'purchaseCost', align: 'right' as const },
-  { title: '인건비', dataIndex: 'laborCost', key: 'laborCost', align: 'right' as const },
-  { title: '변동비', dataIndex: 'variableCost', key: 'variableCost', align: 'right' as const },
-  { title: '고정비', dataIndex: 'fixedCost', key: 'fixedCost', align: 'right' as const }
-];
-
-const monthlyTotalTableCols: TableProps<MonthlySalesTotalTableColType>['columns'] = [
-  { title: '', dataIndex: 'label', key: 'label', width: 90 },
-  { title: '총수입', dataIndex: 'totalIncome', key: 'totalIncome', align: 'right' as const },
-  { title: '총지출', dataIndex: 'totalExpense', key: 'totalExpense', align: 'right' as const },
-  { title: '총이익', dataIndex: 'totalProfit', key: 'totalProfit', align: 'right' as const }
-];
-
 const SalesMonthPage: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState(dayjs());
-  const [storeCode, setStoreCode] = useState('seoul');
+  const [selectedDate, setSelectedDate] = useState(getNow());
+  const [selectedStoreCode, setSelectedStoreCode] = useState('SEOCHO');
   const [fileFormat, setFileFormat] = useState('excel');
   const [showLoading, setShowLoading] = useState(false);
+  const [monthlySales, setMonthlySales] = useState<GetMonthlySalesResponse>();
   
   useEffect(() => {
     const year = selectedDate.get('year');
-    const month = selectedDate.get('month') + 1; // dayjs month is 0-indexed
+    const month = selectedDate.get('month') + 1;
     setShowLoading(true);
-    getMonthlySales('SEOCHO', year, month).then(response => {
-      // TODO: Handle the response and update the state
-      console.log(response);
+    getMonthlySales(selectedStoreCode, year, month).then(response => {
+      setMonthlySales(response.data);
     }).finally(() => {
       setShowLoading(false);
     });
-  }, [selectedDate, storeCode]);
+  }, [selectedDate, selectedStoreCode]);
 
   // TODO: Fetch data based on year and store
   const storeOptions = [
-    { value: 'seoul', label: '서울' },
-    { value: 'busan', label: '부산' }
+    { value: 'SEOCHO', label: '서초' },
+    { value: 'SIHEUNG', label: '시흥' }
   ];
   const formatOptions = [
     { value: 'excel', label: 'Excel' },
     { value: 'pdf', label: 'PDF' }
-  ];
-
-  const dailySalesData: DailySalesTableColType[] = [
-    {
-      key: '1',
-      date: '10일',
-      day: '금',
-      cash: 1000,
-      card: 1000,
-      salesTotal: 2000,
-      weeklySalesTotal: 2000,
-      cumulativeSales: 2000,
-      cardPercent: 50,
-      purchase: 2000,
-      cumulativePurchase: 2000,
-      variableCost: 2000,
-      variableCostCumulative: 2000,
-      note: '비고 비고'
-    }
   ];
 
   const weeklySalesSummaryData: WeeklySalesSummaryTableColType[] = [
@@ -103,6 +53,10 @@ const SalesMonthPage: React.FC = () => {
     { key: '1', label: '합계' }
   ];
 
+  const formattedDailySales = formatDailySales(monthlySales?.dailySales ?? []);
+  const formattedWeeklySales = formatWeeklySalesSummary(monthlySales?.weeklySales ?? []);
+  const formattedMonthlyTotal = formatMonthlyTotal(monthlySales ?? ({} as GetMonthlySalesResponse));
+
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <PeriodHeader
@@ -110,8 +64,8 @@ const SalesMonthPage: React.FC = () => {
         period={selectedDate}
         onPrev={() => setSelectedDate(y => y.subtract(1, 'month'))}
         onNext={() => setSelectedDate(y => y.add(1, 'month'))}
-        store={storeCode}
-        onChangeStore={setStoreCode}
+        store={selectedStoreCode}
+        onChangeStore={setSelectedStoreCode}
         fileFormat={fileFormat}
         onChangeFormat={setFileFormat}
         formatDisplay="YYYY.MM"
@@ -122,7 +76,7 @@ const SalesMonthPage: React.FC = () => {
       <Card styles={{body: {padding: 0}}}>
         <Table
           columns={dailySalesTableCols}
-          dataSource={dailySalesData}
+          dataSource={formattedDailySales}
           bordered
           pagination={false}
           scroll={{ x: 1500 }}
@@ -130,9 +84,9 @@ const SalesMonthPage: React.FC = () => {
             <Table.Summary>
               <Table.Summary.Row>
                 <Table.Summary.Cell index={0} colSpan={2}>합계</Table.Summary.Cell>
-                <Table.Summary.Cell index={2} align="right">1,000</Table.Summary.Cell>
-                <Table.Summary.Cell index={3} align="right">1,000</Table.Summary.Cell>
-                <Table.Summary.Cell index={4} align="right">2,000</Table.Summary.Cell>
+                <Table.Summary.Cell index={2} align="right">{addComma(monthlySales?.monthTotalCash ?? 0)}</Table.Summary.Cell>
+                <Table.Summary.Cell index={3} align="right">{addComma(monthlySales?.monthTotalCard ?? 0)}</Table.Summary.Cell>
+                <Table.Summary.Cell index={4} align="right">{addComma(monthlySales?.monthTotalSales ?? 0)}</Table.Summary.Cell>
                 {/* 생략 */}
               </Table.Summary.Row>
             </Table.Summary>
@@ -147,8 +101,8 @@ const SalesMonthPage: React.FC = () => {
       <Card styles={{body: {padding: 0}}}>
         <Table
           columns={weeklySummaryTableCols}
+          dataSource={formattedWeeklySales}
           className='summary-table'
-          dataSource={weeklySalesSummaryData}
           bordered
           pagination={false}
         />
@@ -158,8 +112,8 @@ const SalesMonthPage: React.FC = () => {
       <Card styles={{body: {padding: 0}}}>
         <Table
           columns={monthlyTotalTableCols}
+          dataSource={formattedMonthlyTotal}
           className='summary-table'
-          dataSource={monthlySalesTotalData}
           bordered
           pagination={false}
         />

@@ -1,7 +1,8 @@
 
+import { ApiResponse } from "../ApiResponse";
 import apiUtil from "../ApiUtil";
 
-interface MonthlySales {
+interface MonthDailySales {
   branchCd: string;
   registDate: string;
   cardSales: number;
@@ -16,11 +17,31 @@ interface MonthlySales {
   comment: string;
 };
 
-interface GetMonthlySalesResponse {
-  dailySales: MonthlySales[];
+interface MonthWeeklySales {
+  branchCd: string;
+  yearMonth: string;
+  weekNumber: number;
+  salesAvg: number;
+  expectedTotalSales: number;
+  totalExpense: number;
+  humanResourceExpense: number;
+  variableExpense: number;
+  fixedExpense: number;
 };
 
-const getMonthlySales = async (branchCd: string, year: number, month: number): Promise<GetMonthlySalesResponse> => {
+interface GetMonthlySalesResponse {
+  branchCd: string;
+  yearMonth: string;
+  dailySales: MonthDailySales[];
+  weeklySales: MonthWeeklySales[];
+  monthTotalCard: number;
+  monthTotalCash: number;
+  monthTotalSales: number;
+  monthTotalExpense: number;
+  monthTotalProfit: number;
+};
+
+const getMonthlySales = async (branchCd: string, year: number, month: number): Promise<ApiResponse<GetMonthlySalesResponse>> => {
   if(!branchCd?.trim() || !year || !month) throw new Error('branchCd, year and month are required');
 
   const param = new URLSearchParams();
@@ -38,5 +59,5 @@ const getMonthlySales = async (branchCd: string, year: number, month: number): P
 };
 
 export {getMonthlySales};
-export type {MonthlySales, GetMonthlySalesResponse};
+export type {MonthDailySales, MonthWeeklySales, GetMonthlySalesResponse};
 
