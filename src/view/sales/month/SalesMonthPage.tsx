@@ -60,7 +60,7 @@ const SalesMonthPage: React.FC = () => {
   return (
     <Space direction="vertical" size="large" style={{ width: '100%' }}>
       <PeriodHeader
-        title="년별 매출"
+        title="월별 매출"
         period={selectedDate}
         onPrev={() => setSelectedDate(y => y.subtract(1, 'month'))}
         onNext={() => setSelectedDate(y => y.add(1, 'month'))}

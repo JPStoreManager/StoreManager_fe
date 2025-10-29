@@ -11,6 +11,11 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   S3_BUCKET_NAME: ${{ secrets.S3_FRNT_BUCKET_NM }}
 
+# OIDC 토큰 요청을 위한 권한 설정
+permissions:
+  id-token: write # OIDC 인증을 위해 JWT를 요청하는데 필요
+  contents: read  # actions/checkout@v4에서 코드를 가져오는데 필요
+
 jobs:
   build-and-deploy:
     if: github.event.pull_request.merged == true
@@ -41,12 +46,15 @@ jobs:
       - name: Build React App
         run: npm run build:dev
 
-      - name: Login to AWS
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
+          # 담당할 IAM 역할의 ARN 지정
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
+          # 역할 세션 이름 지정
+          role-session-name: GitHubActionsSession
           aws-region: ${{ env.AWS_REGION }}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          mask-aws-account-id: 'true' # AWS 계정 ID 마스킹 처리
 
       - name: Upload to S3
         run: |
